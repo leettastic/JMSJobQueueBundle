@@ -245,11 +245,11 @@ class RunCommand extends \Symfony\Bundle\FrameworkBundle\Command\ContainerAwareC
             $data['job']->setErrorOutput($data['process']->getErrorOutput());
             $data['job']->setRuntime(time() - $data['start_time']);
 
-            \Oento\CoreBundle\Zmq\Notify::send($data);
-
             $newState = 0 === $data['process']->getExitCode() ? Job::STATE_FINISHED : Job::STATE_FAILED;
             $this->getRepository()->closeJob($data['job'], $newState);
             unset($this->runningJobs[$i]);
+            
+            \Oento\CoreBundle\Zmq\Notify::send($data);
         }
 
         gc_collect_cycles();
